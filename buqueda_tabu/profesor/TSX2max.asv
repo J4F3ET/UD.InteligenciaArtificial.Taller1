@@ -65,13 +65,13 @@ for i=1:numero_iteraciones
         end
     else% Si el movimiento es 1(esta registrado)
         candidato=vector_modificacion(posicion_mejor,1:10);
-        % Si candidato es un buen movimiento entonces lo vuelve a
-        % registrar
+        
         if (funx210(candidato)> nivel_vector_aspiracion)
             x_actual=candidato;
             nivel_vector_aspiracion=funx210(x_actual);
             mejor_solucion=x_actual;
             lista_tabu=actualizar_lista_tabu(movimiento(posicion_mejor),lista_tabu,movimiento_es_tabu);
+            
         end
     end
  lista_tabu;
@@ -80,6 +80,7 @@ for i=1:numero_iteraciones
    grafasp(i)=nivel_vector_aspiracion;
         
 end
-disp(mejor_solucion);
+
+mejor_solucion
 plot (xgraf,graf,xgraf,grafasp);
 
