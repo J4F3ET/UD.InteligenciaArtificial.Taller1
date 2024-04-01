@@ -19,7 +19,6 @@ end
 if (restr1 <= b(1))dif1=0;
 else dif1=restr1 - b(1);
 end
-
 %restriccion2
 restr2=0;
 for j=1:15
@@ -59,6 +58,7 @@ end
 if (restr5 <= b(5)) dif5=0;
 else dif5=restr5 - b(5);
 end
+disp([dif1,dif2,dif3,dif4,dif5])
 z=z-M*dif1-M*dif2-M*dif3-M*dif4-M*dif5;
 
 end
