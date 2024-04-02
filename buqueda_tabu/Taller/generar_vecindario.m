@@ -1,4 +1,4 @@
-function vecindario = generar_vecindario(maquinas,tareas,r,b)
+function vecindario = generar_vecindario(x_actual,maquinas,tareas,C,r,b)
 
     %Genera una matriz de 3 dimenciones que se manipulara como un array de
     %matrices vecindarios sea una matriz de '0' [maquinas x tareas x maquinas]
@@ -20,7 +20,7 @@ function vecindario = generar_vecindario(maquinas,tareas,r,b)
 
         %Si la calificacion no es mayor o igual a # no se tomara la
         %combinacion
-        if(verificar_solucion(maquinas,tareas,vecindario(:,:,j),r,b) >= 4)
+        if(verificar_solucion(maquinas,tareas,vecindario(:,:,j),r,b) >= 4 )%%&& funcion_objetivo(C,x_actual,r,b)<=funcion_objetivo(C,vecindario(:,:,j),r,b))
             j=j+1;
         end
     end

@@ -16,7 +16,7 @@ calificacion = verificar_solucion(maquinas,tareas,mejor_solucion,r,b);
 solucion = remplazar_con_r(maquinas,tareas,x_actual,r);
 for i=1:numero_iteraciones
     %Genera un array de combinaciones(vecinos)
-    vecindario = generar_vecindario(maquinas,tareas,r,b);
+    vecindario = generar_vecindario(x_actual,maquinas,tareas,C,r,b);
     
     %Retorna el indice y costo del mejor vecino
     [mejor_vecino_indice,mejor_vecino_costo]=mayor(vecindario,maquinas,C,r,b);
@@ -53,14 +53,17 @@ for i=1:numero_iteraciones
 
     calificacion = nueva_calificacion;
 end
-disp(nivel_aspiracion);
+disp("Nivel de aspiracion"+nivel_aspiracion);
 figure;
 plot (1:numero_iteraciones,lista_soluciones,1:numero_iteraciones,lista_nivel_aspiraciones);
 grid on
 figure
 bar(lista_test)
 grid on
+disp("Solucion(X)")
 disp(solucion)
+disp("Comparacion de b con la suma de la solucion")
+disp("b---solucion")
 for i=1:maquinas
     disp([b(i),sum(solucion(i,:))])
 end
