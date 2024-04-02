@@ -1,52 +1,67 @@
-% Cargar matrices
 clear;
+%Importa los datos C,X,b,r
 load("data.mat")
 numero_iteraciones=input('Digite numero de iteraciones: ');
-[numero_Trabajadores, numero_Trabajos] = size(C);
-%Genera un x_actual random
-x_actual=randi([0, 1], numero_Trabajadores, numero_Trabajos);
-x_actual(1,:)
-%funcion_objetivo
-nivel_vector_aspiracion=funcion_objetivo(C,x_actual,r,b);
+%Conocer el numero de Maquinas(filas) y el numero de Tareas(columnas)
+[maquinas, tareas] = size(C);
+x_actual=X;
+nivel_aspiracion=funcion_objetivo(C,x_actual,r,b);
 mejor_solucion=x_actual;
-%Inicializa la lista y la llena de 0
-lista_tabu=zeros(numero_Trabajadores,numero_Trabajos,3);
-for i=1:3
-    lista_tabu(i)=0;
-end
-
-%Itera de 1 a Numero de iteraciones
+%Una lista de misma cantidad de vecinos(5)
+lista_tabu=zeros(maquinas,tareas,5);
+%Nivel de calidad de la solucion (1 a 5)
+calificacion = verificar_solucion(maquinas,tareas,mejor_solucion,r,b);
+%Remplaza los valores 1 de la matriz x_actual por los valores en r en su
+%mismo indice
+solucion = remplazar_con_r(maquinas,tareas,x_actual,r);
 for i=1:numero_iteraciones
-    %Itera de 1 a 4
-    %Se encuentra de manera ALEATORIA la posicion a cambiar y la cambia
-    %Vecindario es un conjunto de soluciones en este caso una matriz 5x15
-    vecindario = zeros(numero_Trabajadores,numero_Trabajos,numero_Trabajadores);
-    for j=1:numero_Trabajadores%Filas 5
-        m=randi(numero_Trabajadores);
-        n=randi(numero_Trabajos);
-        vecindario(:,:,j) = x_actual;
-        if(vecindario(m,n,j)==0)
-            vecindario(m,n,j)=1;
-        else
-            vecindario(m,n,j)=0;
-        end
-    end
-    %Devuelve la posicion del valor mayor dentro del vecindario
-    [mejor_vecino_indice,mejor_vecino_costo]=mayor(vecindario,numero_Trabajadores,C,r,b);
+    %Genera un array de combinaciones(vecinos)
+    vecindario = generar_vecindario(maquinas,tareas,r,b);
+    
+    %Retorna el indice y costo del mejor vecino
+    [mejor_vecino_indice,mejor_vecino_costo]=mayor(vecindario,maquinas,C,r,b);
+    
+    %Retorna el mejor vecino(combinacion) del vecindario
     candidato = vecindario(:,:,mejor_vecino_indice);
-    % Actualiza la asignación actual y la lista tabú
+
+    %Verifica si la combinacion ya esta registrada en la lista tabu
     es_tabu=verifica_es_tabu(candidato,lista_tabu);
+
+    %Si no esta registrado actualizado x_actual
     if(es_tabu==0)
         x_actual=candidato;
     end
-    if(funcion_objetivo(C,candidato,r,b)>nivel_vector_aspiracion)
-        nivel_vector_aspiracion = funcion_objetivo(C,candidato,r,b);
+    
+    %Si el candidato tiene mejor nivel de aspiracion
+    if(funcion_objetivo(C,candidato,r,b)>nivel_aspiracion)
+        nivel_aspiracion = funcion_objetivo(C,candidato,r,b);
         mejor_solucion=candidato;
         lista_tabu=actualizar_lista_tabu(candidato,lista_tabu,es_tabu);
     end
-    xgraf(i)=i;
-    graf(i)=(funcion_objetivo(C,x_actual,r,b));
-    grafasp(i)=nivel_vector_aspiracion; 
+
+    %LISTAS DE REGISTROS
+
+    lista_soluciones(i:numero_iteraciones)=funcion_objetivo(C,x_actual,r,b);
+    lista_nivel_aspiraciones(i:numero_iteraciones)=nivel_aspiracion;
+    nueva_calificacion =  verificar_solucion(maquinas,tareas,x_actual,r,b);
+    lista_test(i:numero_iteraciones) = nueva_calificacion;
+
+    %Guarda la mejor solucion de las iteraciones
+    if(nueva_calificacion > calificacion)
+        solucion = remplazar_con_r(maquinas,tareas,x_actual,r);
+    end
+
+    calificacion = nueva_calificacion;
 end
-disp(nivel_vector_aspiracion);
-plot (xgraf,graf,xgraf,grafasp);
+disp(nivel_aspiracion);
+figure;
+plot (1:numero_iteraciones,lista_soluciones,1:numero_iteraciones,lista_nivel_aspiraciones);
+grid on
+figure
+bar(lista_test)
+grid on
+disp(solucion)
+for i=1:maquinas
+    disp([b(i),sum(solucion(i,:))])
+end
+
